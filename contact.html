@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dream-project - Contact</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header class="navbar">
+        <a class="nav-link" href="index.html">what bothers you today?</a>
+        <a class="nav-link" href="about.html">about</a>
+    </header>
+
+    <main class="contact-page">
+        <div class="contact-grid">
+            <!-- Left Column: Perspective Intro & Terms -->
+            <div class="contact-info">
+                <h1 class="contact-title">Share your perspective</h1>
+
+                <div class="contact-description">
+                    <p>This project isn't meant to have all the answers. It's a growing collection of questions, stories, and perspectives. If you've noticed a mistake, have an insight you'd like to share, or simply have an idea that could make this project better, we'd love to hear from you. Every thoughtful contribution helps this space become more useful for the next woman who arrives here.</p>
+                    <p class="signature">Ruth</p>
+                </div>
+
+                <div class="terms-notice">
+                    <p class="terms-heading">By submitting this form, you agree that:</p>
+                    <ul class="terms-list">
+                        <li>The information you provide is your own and does not knowingly infringe on someone else's rights.</li>
+                        <li>You grant us permission to review, edit, and publish your contribution as part of this project.</li>
+                        <li>Your submission may be edited for clarity, grammar, length, or consistency while preserving its original meaning.</li>
+                        <li>We may choose not to publish every submission.</li>
+                        <li>We may contact you about your submission if clarification is needed.</li>
+                        <li>Your personal information will only be used to process your message and will not be shared with third parties.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Right Column: Interactive Submission Form -->
+            <div class="contact-form-wrapper">
+                <form class="contact-form" id="contactForm" novalidate>
+                    <!-- First Name -->
+                    <div class="form-group">
+                        <label for="firstName" class="form-label">First name</label>
+                        <input type="text" id="firstName" name="firstName" class="form-input" required autocomplete="given-name">
+                    </div>
+
+                    <!-- Email -->
+                    <div class="form-group">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" id="email" name="email" class="form-input" required autocomplete="email">
+                    </div>
+
+                    <!-- Topic Concern (Radio buttons) -->
+                    <div class="form-group">
+                        <span class="form-label">What does it concern</span>
+                        <div class="radio-group">
+                            <label class="radio-option">
+                                <input type="radio" name="concern" value="mistake" checked>
+                                <span class="custom-radio"></span>
+                                <span class="radio-text">Spot a mistake in the story</span>
+                            </label>
+
+                            <label class="radio-option">
+                                <input type="radio" name="concern" value="insight">
+                                <span class="custom-radio"></span>
+                                <span class="radio-text">Add life insight</span>
+                            </label>
+
+                            <label class="radio-option">
+                                <input type="radio" name="concern" value="ideas">
+                                <span class="custom-radio"></span>
+                                <span class="radio-text">Share ideas or advice about the project</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Message -->
+                    <div class="form-group">
+                        <label for="message" class="form-label">Message</label>
+                        <textarea id="message" name="message" class="form-textarea" placeholder="Please describe your ideas here" rows="6" required></textarea>
+                    </div>
+
+                    <!-- Terms Acceptance -->
+                    <div class="form-group">
+                        <label class="checkbox-option">
+                            <input type="checkbox" id="acceptTerms" name="acceptTerms" required>
+                            <span class="custom-checkbox"></span>
+                            <span class="checkbox-text">I accept the terms</span>
+                        </label>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="form-action">
+                        <button type="submit" class="submit-btn" id="submitBtn">Submit</button>
+                    </div>
+
+                    <!-- Submission feedback toast -->
+                    <div class="form-feedback" id="formFeedback" style="display: none;"></div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('contactForm');
+            const feedback = document.getElementById('formFeedback');
+            const submitBtn = document.getElementById('submitBtn');
+
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+
+                const firstName = document.getElementById('firstName').value.trim();
+                const email = document.getElementById('email').value.trim();
+                const message = document.getElementById('message').value.trim();
+                const accepted = document.getElementById('acceptTerms').checked;
+
+                if (!firstName || !email || !message) {
+                    showFeedback('Please fill in all required fields.', 'error');
+                    return;
+                }
+
+                if (!accepted) {
+                    showFeedback('Please accept the terms before submitting.', 'error');
+                    return;
+                }
+
+                // Simulate successful submission
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Sending...';
+
+                setTimeout(() => {
+                    form.reset();
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Submit';
+                    showFeedback('Thank you for sharing your perspective! Your contribution has been received.', 'success');
+                }, 700);
+            });
+
+            function showFeedback(text, type) {
+                feedback.textContent = text;
+                feedback.className = `form-feedback ${type}`;
+                feedback.style.display = 'block';
+                setTimeout(() => {
+                    feedback.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }, 100);
+            }
+        });
+    </script>
+</body>
+
+</html>

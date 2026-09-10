@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Life-area</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header class="navbar">
+        <a class="nav-link" href="index.html">what bothers you today?</a>
+        <a class="nav-link" href="about.html">about</a>
+    </header>
+
+    <section class="life-area-page">
+        <div class="life-area-grid">
+            <div class="area-image-group">
+                <p class="area-question" id="areaQuestion">Why doesn't the life everyone wants for me feel right?</p>
+                <div class="image-wrap">
+                    <img id="areaImage" src="images/Frame 42.jpg" alt="Portrait">
+                </div>
+                <p class="figure-name" id="figureName">// Rose of Lima</p>
+            </div>
+
+            <div class="life-area-detail">
+                <div class="tab-group" id="tabGroup">
+                    <button class="tab-button is-active" data-tab="story" type="button">[ 1 Story ]</button>
+                    <button class="tab-button" data-tab="thoughts" type="button">2 Thoughts</button>
+                    <button class="tab-button" data-tab="action" type="button">3 One thing to do</button>
+                </div>
+                <div class="tab-content">
+                    <div class="text-wrapper">
+                        <p id="tabText">Imagine a young woman grows up in a comfortable family. She is beautiful, talented, and
+                            everyone assumes she'll marry well and have a secure future. But the more people admire her
+                            life, the more she feels disconnected from it. She isn't interested in status or being
+                            admired. Instead, she wants a quiet life where she can help people who are poor and sick.
+                            Her parents can't understand why she would reject opportunities that many women dream of.
+                            Rather than following the expected path, she chooses to stay single, earns her own living by
+                            sewing and gardening, and devotes her life to serving others—even though almost nobody
+                            around her understands her decision.</p>
+                    </div>
+                    <div class="action-wrapper">
+                        <a href="contact.html" class="share-button">Share Your perspective &gt;</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+    <!-- Centralized Data Store -->
+    <script src="data.js"></script>
+    <!-- Life-Area Controller -->
+    <script src="life-area.js"></script>
+</body>
+
+</html>

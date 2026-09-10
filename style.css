@@ -1,0 +1,1137 @@
+:root {
+    --progress: 0;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500&family=Work+Sans:wght@300;400;500&display=swap');
+
+html,
+body {
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    background-color: #ffffff;
+    font-family: "Geist Mono", monospace;
+    color: #111;
+    overflow: hidden;
+    user-select: none;
+}
+
+/* Header Navbar */
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 2rem;
+    z-index: 50;
+    pointer-events: auto;
+}
+
+.nav-link,
+.button {
+    font-family: "Geist Mono", monospace;
+    font-size: 0.9rem;
+    font-weight: 400;
+    text-decoration: none;
+    color: #000;
+    letter-spacing: -0.01em;
+}
+
+
+/* Side Navigation */
+.side-nav {
+    position: fixed;
+    top: 50%;
+    left: 2rem;
+    transform: translateY(-50%);
+    z-index: 50;
+    pointer-events: auto;
+}
+
+/* Bottom Interactive Horizontal Drag / Scroll Control Bar */
+.zoom-slider-container {
+    position: fixed;
+    bottom: 1.25rem;
+    left: 2rem;
+    right: 2rem;
+    height: 2.5rem;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.75rem;
+    z-index: 50;
+    cursor: ew-resize;
+}
+
+.zoom-slider-container.dragging {
+    cursor: grabbing;
+}
+
+.zoom-slider-container .arrow {
+    font-family: "Geist Mono", monospace;
+    font-size: 1.1rem;
+    user-select: none;
+}
+
+.track-wrapper {
+    flex: 1;
+    position: relative;
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.track-line {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background-color: #000;
+    transform: translateY(-50%);
+    z-index: 1;
+}
+
+.zoom-handle {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    z-index: 2;
+    cursor: grab;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    will-change: transform;
+}
+
+.zoom-slider-container.dragging .zoom-handle {
+    cursor: grabbing;
+}
+
+.zoom-label {
+    font-family: "Geist Mono", monospace;
+    font-size: 0.85rem;
+    font-weight: 400;
+    color: #000;
+    background-color: #ffffff;
+    padding: 0 0.5rem;
+    white-space: nowrap;
+    user-select: none;
+}
+
+/* Canvas Wrapper */
+.canvas-wrapper {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    overflow: hidden;
+}
+
+/* 5 Columns x 3 Rows Responsive Grid Layout */
+.canvas {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+
+    /* Grid dimensions transition smoothly from padded state to 100vw x 100vh */
+    width: calc(82vw + (var(--progress) * 18vw));
+    height: calc(75vh + (var(--progress) * 25vh));
+    gap: calc((1 - var(--progress)) * 2rem);
+
+    will-change: width, height, gap;
+}
+
+/* Card Item */
+.card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    text-decoration: none;
+}
+
+/* Image Container */
+.img-box {
+    /* Scales continuously from square thumbnail to full grid cell coverage */
+    width: calc(52% + (var(--progress) * 48%));
+    height: calc(62% + (var(--progress) * 38%));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+    will-change: width, height;
+}
+
+/* Card Image */
+.card-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    user-select: none;
+}
+
+/* Card Title (- Subject -) on Canvas Grid */
+.card .card-title {
+    font-family: "Work Sans", sans-serif;
+    font-size: 0.85rem;
+    font-weight: 400;
+    color: #111;
+    margin-top: calc((1 - var(--progress)) * 0.5rem);
+    text-align: center;
+    white-space: nowrap;
+
+    /* Fades out as progress increases */
+    opacity: max(0, calc(1 - var(--progress) * 2.2));
+    max-height: calc((1 - var(--progress)) * 1.5rem);
+    will-change: opacity;
+}
+
+/* ==========================================================================
+   Editorial Split-Screen List View
+   ========================================================================== */
+
+.list-page {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    position: relative;
+    background-color: #ffffff;
+}
+
+.list-background {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* Left Column: Scrollable List Container */
+.list-container {
+    height: 100vh;
+    display: flex;
+    flex-direction: row;
+    padding-top: 5rem;
+    overflow: hidden;
+    position: relative;
+    background-color: #ffffff;
+    gap: 10px;
+
+}
+
+.list-container .button-wrapper {
+    padding: 0 4rem 1.25rem 5rem;
+    flex-shrink: 0;
+}
+
+.list-container .button-wrapper .nav-link {
+    font-size: 0.85rem;
+    text-transform: lowercase;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    color: #111;
+    transition: opacity 0.2s ease;
+}
+
+.list-container .button-wrapper .nav-link:hover {
+    opacity: 0.6;
+}
+
+.list-wrapper {
+    margin-left: 3rem;
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 1rem 4rem 6rem 5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
+    scroll-behavior: smooth;
+    user-select: text;
+
+    /* Sleek minimalist scrollbar */
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
+}
+
+.list-wrapper::-webkit-scrollbar {
+    width: 4px;
+}
+
+.list-wrapper::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.list-wrapper::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.15);
+    border-radius: 4px;
+}
+
+/* List Items & Hover Dimming */
+.list-item {
+    opacity: 1;
+    transform: translateX(0);
+    transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+        transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    cursor: pointer;
+}
+
+.list-item a {
+    font-family: "Work Sans", sans-serif;
+    font-size: 1.15rem;
+    font-weight: 400;
+    line-height: 1.6;
+    color: #111;
+    text-decoration: none;
+    display: inline-block;
+    transition: color 0.2s ease;
+}
+
+/* Dim all list items to ~0.25 when the list container is hovered */
+.list-wrapper:hover .list-item {
+    opacity: 0.25;
+}
+
+/* The specifically hovered item remains at full 1.0 opacity */
+.list-wrapper .list-item:hover,
+.list-wrapper .list-item:focus-within {
+    opacity: 1;
+    transform: translateX(6px);
+}
+
+/* Right Column: Fixed Preview Stage */
+.image-group {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #0f0f11;
+    overflow: hidden;
+    border-left: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+/* Absolute Stacking for Image Wrappers */
+.image-wrapper {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.94);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+        transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+        visibility 0.45s;
+    will-change: opacity, transform;
+}
+
+/* Active Preview State: Smooth Fade-In with Scale */
+.image-wrapper.is-active {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translate(-50%, -50%) scale(1);
+    z-index: 2;
+}
+
+.image-wrapper img {
+    width: min(340px, 32vw);
+    height: min(440px, 56vh);
+    object-fit: cover;
+    display: block;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55),
+        0 4px 12px rgba(0, 0, 0, 0.3);
+    user-select: none;
+}
+
+.image-wrapper .card-title {
+    font-family: "Work Sans", sans-serif;
+    font-size: 0.85rem;
+    font-weight: 400;
+    color: #e5e5e5;
+    margin-top: 1.25rem;
+    text-align: center;
+    letter-spacing: 0.06em;
+    opacity: 0.85;
+    max-height: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 900px) {
+    .list-background {
+        grid-template-columns: 1fr;
+    }
+
+    .image-group {
+        display: none;
+    }
+
+    .list-container .button-wrapper {
+        padding: 0 2rem 1rem 2rem;
+    }
+
+    .list-wrapper {
+        padding: 0 2rem 4rem 2rem;
+    }
+}
+
+/* ==========================================================================
+   Life-Area Editorial View
+   ========================================================================== */
+
+.life-area-page {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background-color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 8rem 4rem 8rem 4rem;
+    /* 14rem provides generous space beneath */
+    user-select: text;
+
+    /* Subtle custom scrollbar */
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
+}
+
+.life-area-page::-webkit-scrollbar {
+    width: 5px;
+}
+
+.life-area-page::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.15);
+    border-radius: 4px;
+}
+
+.life-area-grid {
+    display: grid;
+    grid-template-columns: minmax(320px, 440px) minmax(380px, 560px);
+    gap: 5rem;
+    align-items: start;
+    justify-content: center;
+    width: 100%;
+    max-width: 1140px;
+    margin: 0 auto;
+}
+
+
+/* Left Column: Image & Caption */
+.area-image-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.area-question {
+    font-family: "Work Sans", sans-serif;
+    font-size: 1.25rem;
+    font-weight: 400;
+    line-height: 1.4;
+    color: #111;
+    margin-bottom: 2rem;
+    min-height: 2.8rem;
+    display: flex;
+    align-items: center;
+}
+
+.image-wrap {
+    width: 100%;
+    aspect-ratio: 1 / 1.1;
+    overflow: hidden;
+    background-color: #f5f5f5;
+}
+
+.image-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    user-select: none;
+}
+
+.figure-name {
+    margin-top: 1.1rem;
+    font-family: "Geist Mono", monospace;
+    font-size: 0.85rem;
+    font-weight: 400;
+    color: #222;
+    letter-spacing: -0.01em;
+}
+
+/* Right Column: Tab Group & Reading Card */
+.life-area-detail {
+    display: flex;
+    flex-direction: column;
+}
+
+.tab-group {
+    display: flex;
+    align-items: center;
+    gap: 2.5rem;
+    margin-bottom: 2rem;
+    min-height: 2.8rem;
+}
+
+.tab-button {
+    font-family: "Geist Mono", monospace;
+    font-size: 0.9rem;
+    font-weight: 400;
+    color: #555;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    text-decoration: none;
+    transition: color 0.2s ease, opacity 0.2s ease;
+    white-space: nowrap;
+}
+
+.tab-button:hover {
+    color: #000;
+}
+
+.tab-button.is-active {
+    color: #000;
+    font-weight: 500;
+}
+
+/* Reading Card */
+.tab-content {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.text-wrapper {
+    background-color: #f7f4ed;
+    padding: 3.5rem 3rem;
+    min-height: 480px;
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+}
+
+.text-wrapper p {
+    font-family: "Work Sans", sans-serif;
+    font-size: 1.05rem;
+    font-weight: 400;
+    line-height: 1.75;
+    color: #1a1a1a;
+    margin: 0;
+    transition: opacity 0.2s ease;
+}
+
+/* Bottom Share Button */
+.action-wrapper {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 1.5rem;
+}
+
+.share-button {
+    font-family: "Geist Mono", monospace;
+    font-size: 0.85rem;
+    font-weight: 400;
+    color: #111;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    transition: opacity 0.2s ease;
+}
+
+.share-button:hover {
+    opacity: 0.6;
+}
+
+/* Responsive adjustments */
+@media (max-width: 900px) {
+    .life-area-page {
+        padding: 5rem 1.5rem 8rem 1.5rem;
+        align-items: flex-start;
+    }
+
+    .life-area-grid {
+        grid-template-columns: 1fr;
+        gap: 3rem;
+    }
+
+    .area-question,
+    .tab-group {
+        min-height: auto;
+    }
+
+    .text-wrapper {
+        padding: 2.5rem 2rem;
+        min-height: 340px;
+    }
+}
+
+/* ==========================================================================
+   About Page (Multi-step Editorial Carousel)
+   ========================================================================== */
+
+.about-page {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background-color: #ffffff;
+    padding: 6.5rem 4rem 3rem 4rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    user-select: text;
+}
+
+.about-step {
+    display: none;
+    width: 100%;
+    max-width: 1120px;
+    margin: 0 auto;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+        transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.about-step.is-active {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.about-cards-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    width: 100%;
+    align-items: start;
+}
+
+.card-column {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.section-label {
+    font-family: "Geist Mono", monospace;
+    font-size: 0.85rem;
+    font-weight: 400;
+    color: #111;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    letter-spacing: -0.01em;
+}
+
+.about-card {
+    background-color: #f7f4ed;
+    padding: 3.25rem 2.75rem;
+    min-height: 480px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.about-card-inner p {
+    font-family: "Work Sans", sans-serif;
+    font-size: 0.95rem;
+    line-height: 1.75;
+    color: #1a1a1a;
+    margin-bottom: 1.25rem;
+    font-weight: 400;
+}
+
+.about-card-inner .footnote {
+    font-family: "Geist Mono", monospace;
+    font-size: 0.8rem;
+    color: #666;
+    margin-top: 1.75rem;
+    margin-bottom: 0;
+    letter-spacing: -0.01em;
+}
+
+/* Image Attributions List Card */
+.attributions-card {
+    justify-content: flex-start;
+    max-height: 500px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
+}
+
+.attributions-card::-webkit-scrollbar {
+    width: 4px;
+}
+
+.attributions-card::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.15);
+    border-radius: 4px;
+}
+
+.attributions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.attribution-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.artwork-title {
+    font-family: "Work Sans", sans-serif;
+    font-size: 0.92rem;
+    font-weight: 500;
+    color: #111;
+}
+
+.credit-line {
+    font-family: "Geist Mono", monospace;
+    font-size: 0.78rem;
+    color: #555;
+    line-height: 1.4;
+}
+
+/* Contributors Card (Step 2) */
+.contributors-container {
+    max-width: 520px;
+    margin: 0 auto;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.contributors-card {
+    width: 100%;
+    padding: 3.5rem 3rem;
+    min-height: 440px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2.25rem;
+}
+
+.contributor-entry {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.contributor-name {
+    font-family: "Work Sans", sans-serif;
+    font-size: 1.05rem;
+    font-weight: 500;
+    color: #111;
+}
+
+.contributor-links {
+    font-family: "Geist Mono", monospace;
+    font-size: 0.85rem;
+    color: #444;
+}
+
+.contributor-links a {
+    color: #111;
+    text-decoration: underline;
+    transition: opacity 0.2s ease;
+}
+
+.contributor-links a:hover {
+    opacity: 0.6;
+}
+
+.contributors-footer-prompt {
+    margin-top: 1rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.contributors-footer-prompt p {
+    font-family: "Work Sans", sans-serif;
+    font-size: 0.95rem;
+    color: #333;
+}
+
+.wisdom-link {
+    font-family: "Geist Mono", monospace;
+    font-size: 0.85rem;
+    color: #111;
+    text-decoration: none;
+    font-weight: 500;
+    transition: opacity 0.2s ease;
+}
+
+.wisdom-link:hover {
+    opacity: 0.6;
+}
+
+/* About Pagination Controls */
+.about-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    margin-top: 1.5rem;
+    padding-bottom: 1rem;
+    flex-shrink: 0;
+}
+
+.nav-arrow-btn {
+    font-family: "Geist Mono", monospace;
+    font-size: 0.9rem;
+    background: none;
+    border: none;
+    color: #111;
+    cursor: pointer;
+    padding: 0.4rem 0.6rem;
+    transition: opacity 0.2s ease;
+}
+
+.nav-arrow-btn:hover:not(:disabled) {
+    opacity: 0.6;
+}
+
+.page-indicators {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.step-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: #bbb;
+    cursor: pointer;
+    transition: background-color 0.25s ease, transform 0.25s ease;
+}
+
+.step-dot.is-active {
+    background-color: #111;
+    transform: scale(1.3);
+}
+
+/* ==========================================================================
+   Contact Page (Share your perspective)
+   ========================================================================== */
+
+.contact-page {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background-color: #ffffff;
+    padding: 7rem 4rem 8rem 4rem;
+    user-select: text;
+}
+
+.contact-grid {
+    display: grid;
+    grid-template-columns: minmax(360px, 1.15fr) minmax(360px, 1.1fr);
+    gap: 6rem;
+    width: 100%;
+    max-width: 1140px;
+    margin: 0 auto;
+    align-items: start;
+}
+
+.contact-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.contact-title {
+    font-family: "Work Sans", sans-serif;
+    font-size: 1.35rem;
+    font-weight: 400;
+    color: #111;
+    margin-bottom: 2rem;
+}
+
+.contact-description p {
+    font-family: "Work Sans", sans-serif;
+    font-size: 0.95rem;
+    line-height: 1.75;
+    color: #222;
+    margin-bottom: 1.25rem;
+}
+
+.contact-description .signature {
+    font-family: "Work Sans", sans-serif;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #111;
+    margin-top: 1.5rem;
+    margin-bottom: 2.5rem;
+}
+
+/* Terms Notice */
+.terms-notice {
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+    padding-top: 1.5rem;
+}
+
+.terms-heading {
+    font-family: "Work Sans", sans-serif;
+    font-size: 0.85rem;
+    font-weight: 400;
+    color: #333;
+    margin-bottom: 0.85rem;
+}
+
+.terms-list {
+    list-style: none;
+    padding-left: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+}
+
+.terms-list li {
+    font-family: "Work Sans", sans-serif;
+    font-size: 0.78rem;
+    line-height: 1.55;
+    color: #666;
+    position: relative;
+    padding-left: 1rem;
+}
+
+.terms-list li::before {
+    content: "-";
+    position: absolute;
+    left: 0;
+    color: #888;
+}
+
+/* Contact Form */
+.contact-form-wrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+.contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
+    width: 100%;
+    max-width: 480px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+}
+
+.form-label {
+    font-family: "Work Sans", sans-serif;
+    font-size: 0.85rem;
+    color: #222;
+    font-weight: 400;
+}
+
+.form-input {
+    font-family: "Work Sans", sans-serif;
+    font-size: 0.95rem;
+    padding: 0.75rem 0.85rem;
+    border: 1px solid #222;
+    background-color: #ffffff;
+    outline: none;
+    border-radius: 0;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-input:focus {
+    border-color: #000;
+    box-shadow: 0 0 0 1px #000;
+}
+
+.radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 0.25rem;
+}
+
+.radio-option {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    cursor: pointer;
+}
+
+.radio-option input[type="radio"] {
+    accent-color: #111;
+    width: 15px;
+    height: 15px;
+    cursor: pointer;
+}
+
+.radio-text {
+    font-family: "Work Sans", sans-serif;
+    font-size: 0.85rem;
+    color: #333;
+}
+
+.form-textarea {
+    font-family: "Work Sans", sans-serif;
+    font-size: 0.95rem;
+    padding: 0.85rem;
+    border: 1px solid #222;
+    background-color: #ffffff;
+    outline: none;
+    border-radius: 0;
+    resize: vertical;
+    min-height: 130px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-textarea:focus {
+    border-color: #000;
+    box-shadow: 0 0 0 1px #000;
+}
+
+.checkbox-option {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    cursor: pointer;
+}
+
+.checkbox-option input[type="checkbox"] {
+    accent-color: #111;
+    width: 15px;
+    height: 15px;
+    cursor: pointer;
+}
+
+.checkbox-text {
+    font-family: "Work Sans", sans-serif;
+    font-size: 0.85rem;
+    color: #333;
+}
+
+.form-action {
+    margin-top: 0.5rem;
+}
+
+.submit-btn {
+    background-color: #000000;
+    color: #ffffff;
+    border: none;
+    padding: 0.7rem 2.2rem;
+    font-family: "Geist Mono", monospace;
+    font-size: 0.85rem;
+    cursor: pointer;
+    border-radius: 0;
+    transition: opacity 0.2s ease;
+}
+
+.submit-btn:hover:not(:disabled) {
+    opacity: 0.85;
+}
+
+.submit-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.form-feedback {
+    font-family: "Geist Mono", monospace;
+    font-size: 0.82rem;
+    padding: 0.85rem 1rem;
+    margin-top: 1rem;
+    border-left: 3px solid #111;
+    background-color: #f7f4ed;
+    line-height: 1.5;
+}
+
+.form-feedback.error {
+    border-color: #c53030;
+    color: #9b2c2c;
+}
+
+.form-feedback.success {
+    border-color: #276749;
+    color: #22543d;
+}
+
+/* Responsive adjustments for About and Contact */
+@media (max-width: 900px) {
+    .about-page {
+        padding: 5rem 1.5rem 2rem 1.5rem;
+    }
+
+    .about-cards-grid {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+    }
+
+    .about-card {
+        padding: 2.25rem 1.75rem;
+        min-height: auto;
+    }
+
+    .contact-page {
+        padding: 5rem 1.5rem 5rem 1.5rem;
+    }
+
+    .contact-grid {
+        grid-template-columns: 1fr;
+        gap: 3.5rem;
+    }
+
+    .contact-form {
+        max-width: 100%;
+    }
+}
