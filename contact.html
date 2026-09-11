@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dream-project - Contact</title>
+    <title>Digital knowledge space for women</title>
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -21,19 +21,27 @@
                 <h1 class="contact-title">Share your perspective</h1>
 
                 <div class="contact-description">
-                    <p>This project isn't meant to have all the answers. It's a growing collection of questions, stories, and perspectives. If you've noticed a mistake, have an insight you'd like to share, or simply have an idea that could make this project better, we'd love to hear from you. Every thoughtful contribution helps this space become more useful for the next woman who arrives here.</p>
-                    <p class="signature">Ruth</p>
+                    <p>This project isn't meant to have all the answers. It's a growing collection of questions,
+                        stories, and perspectives. If you've noticed a mistake, have an insight you'd like to share, or
+                        simply have an idea that could make this project better, we'd love to hear from you. Every
+                        thoughtful contribution helps this space become more useful for the next woman who arrives here.
+                    </p>
+                    <p class="signature">Terms</p>
                 </div>
 
                 <div class="terms-notice">
                     <p class="terms-heading">By submitting this form, you agree that:</p>
                     <ul class="terms-list">
-                        <li>The information you provide is your own and does not knowingly infringe on someone else's rights.</li>
-                        <li>You grant us permission to review, edit, and publish your contribution as part of this project.</li>
-                        <li>Your submission may be edited for clarity, grammar, length, or consistency while preserving its original meaning.</li>
+                        <li>The information you provide is your own and does not knowingly infringe on someone else's
+                            rights.</li>
+                        <li>You grant us permission to review, edit, and publish your contribution as part of this
+                            project.</li>
+                        <li>Your submission may be edited for clarity, grammar, length, or consistency while preserving
+                            its original meaning.</li>
                         <li>We may choose not to publish every submission.</li>
                         <li>We may contact you about your submission if clarification is needed.</li>
-                        <li>Your personal information will only be used to process your message and will not be shared with third parties.</li>
+                        <li>Your personal information will only be used to process your message and will not be shared
+                            with third parties.</li>
                     </ul>
                 </div>
             </div>
@@ -44,7 +52,8 @@
                     <!-- First Name -->
                     <div class="form-group">
                         <label for="firstName" class="form-label">First name</label>
-                        <input type="text" id="firstName" name="firstName" class="form-input" required autocomplete="given-name">
+                        <input type="text" id="firstName" name="firstName" class="form-input" required
+                            autocomplete="given-name">
                     </div>
 
                     <!-- Email -->
@@ -60,7 +69,7 @@
                             <label class="radio-option">
                                 <input type="radio" name="concern" value="mistake" checked>
                                 <span class="custom-radio"></span>
-                                <span class="radio-text">Spot a mistake in the story</span>
+                                <span class="radio-text">Edit a mistake in the story</span>
                             </label>
 
                             <label class="radio-option">
@@ -80,7 +89,8 @@
                     <!-- Message -->
                     <div class="form-group">
                         <label for="message" class="form-label">Message</label>
-                        <textarea id="message" name="message" class="form-textarea" placeholder="Please describe your ideas here" rows="6" required></textarea>
+                        <textarea id="message" name="message" class="form-textarea"
+                            placeholder="Please describe your ideas here" rows="6" required></textarea>
                     </div>
 
                     <!-- Terms Acceptance -->
@@ -110,11 +120,12 @@
             const feedback = document.getElementById('formFeedback');
             const submitBtn = document.getElementById('submitBtn');
 
-            form.addEventListener('submit', (e) => {
+            form.addEventListener('submit', async (e) => {
                 e.preventDefault();
 
                 const firstName = document.getElementById('firstName').value.trim();
                 const email = document.getElementById('email').value.trim();
+                const concern = form.querySelector('input[name="concern"]:checked')?.value || 'General';
                 const message = document.getElementById('message').value.trim();
                 const accepted = document.getElementById('acceptTerms').checked;
 
@@ -128,16 +139,30 @@
                     return;
                 }
 
-                // Simulate successful submission
                 submitBtn.disabled = true;
                 submitBtn.textContent = 'Sending...';
 
-                setTimeout(() => {
-                    form.reset();
+                try {
+                    const response = await fetch('/api/contact', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ firstName, email, concern, message })
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        form.reset();
+                        showFeedback('Thank you for sharing your perspective! Your contribution has been received.', 'success');
+                    } else {
+                        showFeedback(data.error || 'Something went wrong. Please try again.', 'error');
+                    }
+                } catch (err) {
+                    showFeedback('Unable to reach server. Please try again later.', 'error');
+                } finally {
                     submitBtn.disabled = false;
                     submitBtn.textContent = 'Submit';
-                    showFeedback('Thank you for sharing your perspective! Your contribution has been received.', 'success');
-                }, 700);
+                }
             });
 
             function showFeedback(text, type) {
