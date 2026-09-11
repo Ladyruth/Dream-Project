@@ -652,6 +652,7 @@ body {
     display: flex;
     flex-direction: column;
     width: 100%;
+
 }
 
 .section-label {
@@ -667,7 +668,7 @@ body {
 .about-card {
     background-color: #f7f4ed;
     padding: 3.25rem 2.75rem;
-    min-height: 480px;
+    height: 100%;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
