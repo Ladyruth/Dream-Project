@@ -18,9 +18,9 @@ export default async function handler(req, res) {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                from: 'Dream Project <onboarding@resend.dev>',
+                from: 'Digital knowledge space for women <onboarding@resend.dev>',
                 reply_to: email, // When you click "Reply" in Gmail, it sends to the visitor!
-                to: ['ladyruth22@gmail.com'],
+                to: ['ezenecheruth@gmail.com'],
                 subject: `New Contribution from ${firstName} (${concern})`,
                 html: `
                     <h2>New Perspective Received</h2>

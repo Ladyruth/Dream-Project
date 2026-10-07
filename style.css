@@ -139,47 +139,55 @@ body {
     user-select: none;
 }
 
-/* Canvas Wrapper */
+/* Canvas Wrapper - Smoothly expands from padded bounded view (0% zoom) to full-bleed edge-to-edge (100% zoom) */
 .canvas-wrapper {
     position: fixed;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    top: calc((1 - var(--progress)) * 4.5rem);
+    bottom: calc((1 - var(--progress)) * 3.75rem);
+    left: 0;
+    right: 0;
     z-index: 10;
     overflow: hidden;
+    cursor: grab;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: none;
+    background-color: #ffffff;
 }
 
-/* 5 Columns x 3 Rows Responsive Grid Layout */
+.canvas-wrapper.is-panning {
+    cursor: grabbing;
+}
+
+/* 2D Infinite Canvas Container */
 .canvas {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    grid-template-rows: repeat(3, 1fr);
-
-    /* Grid dimensions transition smoothly from padded state to 100vw x 100vh */
-    width: calc(82vw + (var(--progress) * 18vw));
-    height: calc(75vh + (var(--progress) * 25vh));
-    gap: calc((1 - var(--progress)) * 2rem);
-
-    will-change: width, height, gap;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 0;
+    transform-origin: 0 0;
+    will-change: transform;
 }
 
-/* Card Item */
+/* Infinite Canvas Card Tile Item */
 .card {
+    position: absolute;
+    top: 0;
+    left: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    position: relative;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
     text-decoration: none;
+    box-sizing: border-box;
+    padding: calc((1 - var(--progress)) * 0.5rem);
+    overflow: hidden;
+    will-change: transform;
 }
 
-/* Image Container */
-.img-box {
-    /* Scales continuously from square thumbnail to full grid cell coverage */
+/* Image Container - Scales continuously from centered thumbnail (52% x 62%) to 100% full-bleed cell coverage */
+.card .img-box {
     width: calc(52% + (var(--progress) * 48%));
     height: calc(62% + (var(--progress) * 38%));
     display: flex;
@@ -187,7 +195,13 @@ body {
     justify-content: center;
     overflow: hidden;
     position: relative;
-    will-change: width, height;
+    background-color: #f7f7f7;
+    will-change: width, height, transform;
+    transition: transform 0.25s ease;
+}
+
+.card:hover .img-box {
+    transform: scale(1.04);
 }
 
 /* Card Image */
@@ -197,9 +211,16 @@ body {
     object-fit: cover;
     display: block;
     user-select: none;
+    pointer-events: none;
+    -webkit-user-drag: none;
+    transition: transform 0.3s ease;
 }
 
-/* Card Title (- Subject -) on Canvas Grid */
+.card:hover .card-image {
+    transform: scale(1.06);
+}
+
+/* Card Title (- Subject -) on Canvas Grid - Fades out as progress increases */
 .card .card-title {
     font-family: "Work Sans", sans-serif;
     font-size: 0.85rem;
@@ -208,11 +229,11 @@ body {
     margin-top: calc((1 - var(--progress)) * 0.5rem);
     text-align: center;
     white-space: nowrap;
-
-    /* Fades out as progress increases */
     opacity: max(0, calc(1 - var(--progress) * 2.2));
     max-height: calc((1 - var(--progress)) * 1.5rem);
-    will-change: opacity;
+    will-change: opacity, margin-top, max-height;
+    user-select: none;
+    pointer-events: none;
 }
 
 /* ==========================================================================
